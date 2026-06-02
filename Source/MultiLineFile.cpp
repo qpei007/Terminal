@@ -36,10 +36,6 @@ void MultiLineFile::display() const {
 
 // edit() для многострочного файла: запрашивает несколько строк.
 // Ввод завершается командой ":wq" (по аналогии с vim).
-// Это КЛЮЧЕВАЯ точка полиморфизма: MultiLineFile::edit() ведёт себя
-// принципиально иначе, чем SingleLineFile::edit().
-// Terminal не знает конкретный тип — он вызывает entry->edit(),
-// а виртуальная диспетчеризация выбирает правильную реализацию.
 void MultiLineFile::edit() {
     std::cout << "Current content:" << std::endl;
     if (lines.empty()) {
