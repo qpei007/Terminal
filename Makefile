@@ -1,17 +1,17 @@
 # Компилятор и флаги
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra -Iheader
+CXXFLAGS = -std=c++17 -Wall -Wextra -IHeaders
 
 # Имя итогового бинарника
 TARGET = terminal
 
 # Исходные файлы
 SRCS = main.cpp \
-       cpp/Entry.cpp \
-       cpp/Directory.cpp \
-       cpp/SingleLineFile.cpp \
-       cpp/MultiLineFile.cpp \
-       cpp/Terminal.cpp
+       Source/Entry.cpp \
+       Source/Directory.cpp \
+       Source/SingleLineFile.cpp \
+       Source/MultiLineFile.cpp \
+       Source/Terminal.cpp
 
 # Объектные файлы (автоматическая замена .cpp -> .o)
 OBJS = $(SRCS:.cpp=.o)
