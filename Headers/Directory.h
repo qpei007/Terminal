@@ -14,7 +14,10 @@ private:
     std::vector<Entry*> children;  // Дочерние сущности
 
 public:
-    Directory(const std::string& name, Directory* parent = nullptr);
+    Directory(
+        const std::string& name,
+        Directory* parent = nullptr
+    );
     ~Directory() override;
 
     // Добавляет дочернюю сущность и устанавливает ей родителя
@@ -25,7 +28,10 @@ public:
 
     // Поиск дочерней сущности по имени.
     // includeHidden = true позволяет находить скрытые сущности (для restore)
-    Entry* findChild(const std::string& childName, bool includeHidden = false) const;
+    Entry* findChild(
+        const std::string& childName,
+        bool includeHidden = false
+    ) const;
 
     // Доступ к списку всех дочерних сущностей (для итерации)
     const std::vector<Entry*>& getChildren() const;
