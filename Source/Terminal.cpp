@@ -399,3 +399,128 @@ void Terminal::cmdRm(const std::string& arg) {
 // Без аргументов: показывает список скрытых 
 // сущностей в текущей директории.
 // С аргументом: восстанавливает указанную.
+void Terminal::cmdRestore(
+    const std::string& arg
+) {
+    if (arg.empty()) {
+        // Показываем список скрытых сущностей 
+        // для удобства пользователя
+        std::cout << "Hidden entries in "
+            << "current directory:"
+            << std::endl;
+        bool hasHidden = false;
+
+        for (const Entry* child :
+            cwd->getChildren()) {
+
+            if (child->isHidden()) {
+                std::cout << "  "
+                    << child->displayName()
+                    << " ["
+                    << child->getType()
+                    << "]" << std::endl;
+                hasHidden = true;
+            }
+        }
+        if (!hasHidden) {
+            std::cout << "  (no hidden entries)"
+                << std::endl;
+        }
+        std::cout << "Usage: restore <name>"
+            << std::endl;
+        return;
+    }
+
+    // Ищем сущность с учётом скрытых 
+    // (includeHidden = true)
+    Entry* entry = cwd->findChild(arg, true);
+    if (entry == nullptr) {
+        std::cout << "Entry not found: '" << arg
+            << "'" << std::endl;
+        return;
+    }
+
+    if (!entry->isHidden()) {
+        std::cout << "'" << arg
+            << "' is not hidden."
+            << std::endl;
+        return;
+    }
+
+    entry->restore();
+    std::cout << "Restored: '" << arg << "'"
+        << std::endl;
+}
+
+// mv — переименовывает файл или директорию.
+// Принимает два аргумента: старое имя и 
+// новое имя. Проверяет уникальность нового 
+// имени (включая скрытые).
+void Terminal::cmdMv(const std::string& args) {
+    // Разбираем два аргумента: 
+    // <old_name> <new_name>
+    std::istringstream iss(args);
+    std::string oldName, newName;
+    iss >> oldName >> newName;
+
+    if (oldName.empty() || newName.empty()) {
+        std::cout << "Usage: mv <old_name> "
+            << "<new_name>" << std::endl;
+        return;
+    }
+
+    Entry* entry = cwd->findChild(oldName);
+    if (entry == nullptr) {
+        std::cout << "Entry not found: '"
+            << oldName << "'"
+            << std::endl;
+        return;
+    }
+
+    // Проверяем, что новое имя не занято
+    Entry* existing = cwd->findChild(
+        newName,
+        true
+    );
+
+    if (existing != nullptr) {
+        std::cout << "Entry '" << newName
+            << "' already exists."
+            << std::endl;
+        return;
+    }
+
+    entry->setName(newName);
+    std::cout << "Renamed: '" << oldName
+        << "' -> '" << newName << "'"
+        << std::endl;
+}
+
+// edit — редактирует содержимое файла.
+// Вызывает полиморфный метод entry->edit().
+// Для SingleLineFile: запрашивает одну строку.
+// Для MultiLineFile: запрашивает несколько 
+// строк (до ":wq").
+// Для Directory: выводит ошибку (через 
+// Directory::edit()).
+// Terminal НЕ проверяет конкретный тип — 
+// полиморфизм делает всё сам.
+void Terminal::cmdEdit(const std::string& arg) {
+    if (arg.empty()) {
+        std::cout << "Usage: edit <file>"
+            << std::endl;
+        return;
+    }
+
+    Entry* entry = cwd->findChild(arg);
+    if (entry == nullptr) {
+        std::cout << "File not found: '" << arg
+            << "'" << std::endl;
+        return;
+    }
+
+    // Полиморфный вызов: конкретный тип 
+    // определяет поведение. Это главная 
+    // демонстрация полиморфизма в программе.
+    entry->edit();
+}
